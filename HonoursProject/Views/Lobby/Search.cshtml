@@ -1,0 +1,56 @@
+﻿@model LobbySearchViewModel
+
+<h2>Search Lobbies</h2>
+
+<form asp-action="Search" method="get">
+    <div>
+        <label>Game:</label>
+        <select name="game">
+            <option value="">Any</option>
+            @foreach (var game in Model.Games)
+            {
+                <option value="@game.Title">@game.Title</option>
+            }
+        </select>
+
+        <label>Platform:</label>
+        <select name="platform">
+            <option value="">Any</option>
+            @foreach (var platform in Model.Platforms)
+            {
+                <option value="@((int)platform)">@platform</option>
+            }
+        </select>
+
+        <label>Language:</label>
+        <select name="language">
+            <option value="">Any</option>
+            @foreach (var language in Model.Languages)
+            {
+                <option value="@language">@language</option>
+            }
+        </select>
+
+        <button type="submit">Search</button>
+    </div>
+</form>
+
+<hr>
+
+@foreach (var lobby in Model.Lobbies)
+{
+    <div>
+        <p><strong>Game:</strong> @lobby.Game.Title</p>
+        <p><strong>Platform:</strong> @lobby.GamePlatform</p>
+        <p><strong>Language:</strong> @lobby.PreferredLanguage</p>
+        <p><strong>Description:</strong> @lobby.Description</p>
+
+        <form asp-action="Join" method="post">
+            <input type="hidden" name="lobbyId" value="@lobby.LobbyId" />
+            <button type="submit">Join</button>
+        </form>
+    </div>
+    <hr>
+}
+
+

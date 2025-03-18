@@ -1,0 +1,76 @@
+﻿@model HonoursProject.Models.UserRegister
+
+@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="container mt-5">
+    <h2 class="text-center">Register</h2>
+
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <form asp-action="Register" asp-controller="Account" method="post" enctype="multipart/form-data">
+                <div asp-validation-summary="All" class="alert alert-danger"></div>
+
+                <div class="mb-3">
+                    <label asp-for="UserName" class="form-label">Username</label>
+                    <input asp-for="UserName" class="form-control" required />
+                    <span asp-validation-for="UserName" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label">Email</label>
+                    <input asp-for="Email" type="email" class="form-control" required />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Password" class="form-label">Password</label>
+                    <input asp-for="Password" type="password" class="form-control" required />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="ConfirmPassword" class="form-label">Confirm Password</label>
+                    <input asp-for="ConfirmPassword" type="password" class="form-control" required />
+                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                </div>
+
+                <hr />
+
+                <div class="mb-3">
+                    <label asp-for="DiscordId" class="form-label">Discord ID (Optional)</label>
+                    <input asp-for="DiscordId" class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="XboxId" class="form-label">Xbox ID (Optional)</label>
+                    <input asp-for="XboxId" class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="PS5Id" class="form-label">PlayStation ID (Optional)</label>
+                    <input asp-for="PS5Id" class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="SteamId" class="form-label">Steam ID (Optional)</label>
+                    <input asp-for="SteamId" class="form-control" />
+                </div>
+
+                <hr />
+
+                <div class="mb-3">
+                    <label asp-for="ProfileImage" class="form-label">Profile Picture (Optional)</label>
+                    <input asp-for="ProfileImage" type="file" class="form-control" />
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">Register</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

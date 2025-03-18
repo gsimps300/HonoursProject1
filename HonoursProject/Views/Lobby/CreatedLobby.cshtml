@@ -1,0 +1,49 @@
+﻿@model CreatedLobbyViewModel
+
+<div>
+    <h2>@Model.GameTitle (@Model.Platform)</h2>
+
+    <div>
+        <h3>Participants</h3>
+        <ul>
+            @foreach (var user in Model.Participants)
+            {
+                <li>
+                    <img src="@user.ProfilePictureUrl" alt="Profile Picture" width="40" height="40" />
+                    <span>@user.UserName (@user.GamingId)</span>
+                </li>
+            }
+        </ul>
+    </div>
+
+    <div>
+        <h3>Chat</h3>
+        <div id="chat-window">
+            @Model.ChatMessages
+        </div>
+        <input type="text" id="chat-input" placeholder="Type a message..." />
+        <button id="send-btn">Send</button>
+    </div>
+
+    <button id="disband-btn">Disband Lobby</button>
+</div>
+
+<script>
+    document.getElementById('send-btn').addEventListener('click', () => {
+        const message = document.getElementById('chat-input').value;
+        if (message.trim() !== '') {
+            // Send message to backend
+            console.log("Message sent:", message);
+            document.getElementById('chat-window').innerHTML += `<p>${message}</p>`;
+            document.getElementById('chat-input').value = '';
+        }
+    });
+
+    document.getElementById('disband-btn').addEventListener('click', async () => {
+        const lobbyId = @Model.LobbyId;
+        const response = await fetch(`/Lobby/Disband/${lobbyId}`, { method: 'POST' });
+        if (response.ok) {
+            window.location.href = '/';
+        }
+    });
+</script>

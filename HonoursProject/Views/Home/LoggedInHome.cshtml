@@ -1,0 +1,13 @@
+﻿@{
+    ViewData["Title"] = "Logged In Home";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Please choose to either find or create a lobby.</p>
+
+    <div class="mt-4">
+        <a asp-controller="Lobby" asp-action="Create" class="btn btn-primary">Create</a>
+        <a asp-controller="Lobby" asp-action="Search" class="btn btn-secondary">Search</a>
+    </div>
+</div>
