@@ -7,7 +7,6 @@
 
 <h2>Create a New Lobby</h2>
 
-<!-- ✅ Display global ModelState errors -->
 @if (!ViewData.ModelState.IsValid)
 {
     <div class="alert alert-danger">
@@ -21,7 +20,6 @@
 }
 
 <form asp-action="Create" method="post">
-    <!-- ✅ Game Selection -->
     <div class="form-group">
         <label asp-for="GameId">Select Game</label>
         <select asp-for="GameId" class="form-control" asp-items="@(new SelectList(Model.Games, "GameId", "Title"))">
@@ -30,7 +28,6 @@
         <span asp-validation-for="GameId" class="text-danger"></span>
     </div>
 
-    <!-- ✅ Platform Selection -->
     <div class="form-group">
         <label asp-for="GamePlatform">Platform</label>
         <select asp-for="GamePlatform" class="form-control" asp-items="Html.GetEnumSelectList<GamePlatform>()">
@@ -39,14 +36,12 @@
         <span asp-validation-for="GamePlatform" class="text-danger"></span>
     </div>
 
-    <!-- ✅ Max Players with Input Constraints -->
     <div class="form-group">
         <label asp-for="MaxPlayers">Max Players</label>
         <input asp-for="MaxPlayers" class="form-control" type="number" min="4" max="12" required />
         <span asp-validation-for="MaxPlayers" class="text-danger"></span>
     </div>
 
-    <!-- ✅ Preferred Language -->
     <div class="form-group">
         <label asp-for="PreferredLanguage">Preferred Language</label>
         <select asp-for="PreferredLanguage" class="form-control">
@@ -59,7 +54,6 @@
         <span asp-validation-for="PreferredLanguage" class="text-danger"></span>
     </div>
 
-    <!-- ✅ Mic Requirement -->
     <div class="form-group">
         <label asp-for="MicRequired">Mic Required</label>
         <select asp-for="MicRequired" class="form-control">
@@ -70,16 +64,14 @@
         <span asp-validation-for="MicRequired" class="text-danger"></span>
     </div>
 
-    <!-- ✅ Description with Character Limit -->
     <div class="form-group">
         <label asp-for="Description">Description</label>
         <textarea asp-for="Description" class="form-control" maxlength="250" placeholder="Optional (Max 250 characters)"></textarea>
         <span asp-validation-for="Description" class="text-danger"></span>
     </div>
 
-    <!-- ✅ Submit and Cancel Buttons -->
     <button type="submit" class="btn btn-primary">Create Lobby</button>
-    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    <a asp-controller="Home" asp-action="LoggedInHome" class="btn btn-secondary">Cancel</a>
 </form>
 
 @section Scripts {

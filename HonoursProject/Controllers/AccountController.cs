@@ -22,7 +22,7 @@ public class AccountController : Controller
         _logger = logger;
     }
 
-    // ✅ Login Method
+   
     [HttpGet]
     public IActionResult Login()
     {
@@ -45,16 +45,16 @@ public class AccountController : Controller
             return View();
         }
 
-        // ✅ Store UserId and UserName in Session
+     
         HttpContext.Session.SetString("UserId", user.UserId.ToString());
         HttpContext.Session.SetString("UserName", user.UserName);
 
-        // ✅ Add explicit "UserId" claim + NameIdentifier for consistency
+     
         var claims = new List<Claim>
         {
             new Claim(ClaimTypes.Name, user.UserName),
             new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
-            new Claim("UserId", user.UserId.ToString()) // ✅ Added explicitly
+            new Claim("UserId", user.UserId.ToString()) 
         };
 
         var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -65,7 +65,7 @@ public class AccountController : Controller
         return RedirectToAction("LoggedInHome", "Home");
     }
 
-    // ✅ Register Method
+   
     [HttpGet]
     public IActionResult Register()
     {
@@ -109,18 +109,18 @@ public class AccountController : Controller
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
-            // ✅ Add explicit "UserId" claim + NameIdentifier for consistency
+            
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.UserName),
                 new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
-                new Claim("UserId", user.UserId.ToString()) // ✅ Added explicitly
+                new Claim("UserId", user.UserId.ToString()) 
             };
 
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
 
-            // ✅ Store UserId and UserName in Session
+            
             HttpContext.Session.SetString("UserId", user.UserId.ToString());
             HttpContext.Session.SetString("UserName", user.UserName);
 
@@ -136,7 +136,13 @@ public class AccountController : Controller
         }
     }
 
-    // ✅ Logout Method
+    [HttpGet]
+    public IActionResult Profile()
+    {
+        return View();
+    }
+
+   
     [HttpPost]
     public async Task<IActionResult> Logout()
     {

@@ -10,7 +10,7 @@ using HonoursProject.Data.Enum;
 
 namespace HonoursProject.Controllers
 {
-    [Authorize] // Ensure only logged-in users can access
+    [Authorize] 
     public class LobbyController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -22,7 +22,7 @@ namespace HonoursProject.Controllers
             _logger = logger;
         }
 
-        // ✅ Create Lobby Page
+       
         public IActionResult Create()
         {
             _logger.LogInformation("Create() GET called");
@@ -44,19 +44,19 @@ namespace HonoursProject.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateLobbyViewModel model)
         {
-            // ✅ Log all available claims for debugging
+           
             _logger.LogInformation("Available Claims:");
             foreach (var claim in User.Claims)
             {
                 _logger.LogInformation($"{claim.Type}: {claim.Value}");
             }
 
-            // ✅ Check if user is authenticated and claim is available
+           
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
             {
                 ModelState.AddModelError("", "User is not authenticated.");
-                // ✅ Reload dropdowns
+               
                 model.Games = await _context.Games.Where(g => g.ActiveStatus).ToListAsync();
                 model.Languages = GetLanguages();
                 return View(model);
@@ -64,11 +64,11 @@ namespace HonoursProject.Controllers
 
             if (!ModelState.IsValid)
             {
-                // ✅ Reload dropdowns in case the form is invalid
+          
                 model.Games = await _context.Games.Where(g => g.ActiveStatus).ToListAsync();
                 model.Languages = GetLanguages();
 
-                // ✅ Log ModelState errors for debugging
+                
                 foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
                 {
                     _logger.LogWarning($"ModelState Error: {error.ErrorMessage}");
@@ -77,7 +77,7 @@ namespace HonoursProject.Controllers
                 return View(model);
             }
 
-            // ✅ Create the lobby if everything is valid
+           
             var lobby = new Lobby
             {
                 UserId = userId,
@@ -103,7 +103,7 @@ namespace HonoursProject.Controllers
             return RedirectToAction("CreatedLobby", new { lobbyId = lobby.LobbyId });
         }
 
-        // ✅ Helper method to get languages
+        
         private List<string> GetLanguages()
         {
             return new List<string>
@@ -116,14 +116,14 @@ namespace HonoursProject.Controllers
 
 
 
-        // ✅ Created Lobby View
+       
         public async Task<IActionResult> CreatedLobby(int lobbyId)
         {
             _logger.LogInformation("CreatedLobby() called with lobbyId: {LobbyId}", lobbyId);
 
             var lobby = await _context.Lobbies
                 .Include(l => l.Participants)
-                    .ThenInclude(lp => lp.User) // ✅ Include User from LobbyParticipant
+                    .ThenInclude(lp => lp.User) 
                 .Include(l => l.Game)
                 .FirstOrDefaultAsync(l => l.LobbyId == lobbyId);
 
@@ -141,18 +141,19 @@ namespace HonoursProject.Controllers
                 Participants = lobby.Participants.Select(lp => new UserInfo
                 {
                     UserName = lp.User.UserName,
-                    GamingId = lp.User.DiscordId ?? lp.User.XboxId ?? lp.User.PS5Id ?? lp.User.SteamId ?? "N/A", // ✅ Select available ID
+                    GamingId = lp.User.DiscordId ?? lp.User.XboxId ?? lp.User.PS5Id ?? lp.User.SteamId ?? "N/A", 
                     ProfilePictureUrl = lp.User.ProfileImageURL
                 }).ToList(),
-                ChatMessages = "" // Placeholder for chat messages
+                ChatMessages = "" 
             };
 
             _logger.LogInformation("Lobby loaded successfully with ID: {LobbyId}", lobby.LobbyId);
+            ViewBag.CreatorId = lobby.UserId;
 
             return View(model);
         }
 
-        // ✅ Disband Lobby
+        
         [HttpPost]
         public async Task<IActionResult> Disband(int id)
         {
@@ -164,7 +165,7 @@ namespace HonoursProject.Controllers
 
             if (lobby != null)
             {
-                _context.LobbyParticipants.RemoveRange(lobby.Participants); // ✅ Remove participants first
+                _context.LobbyParticipants.RemoveRange(lobby.Participants); 
                 _context.Lobbies.Remove(lobby);
                 await _context.SaveChangesAsync();
 
@@ -174,7 +175,25 @@ namespace HonoursProject.Controllers
             return RedirectToAction("LoggedInHome", "Home");
         }
 
-        // ✅ Delete Lobby (Optional)
+        [HttpPost]
+        public async Task<IActionResult> Leave(int lobbyId)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(userIdClaim, out int userId))
+                return RedirectToAction("Login", "Account");
+
+            var participant = await _context.LobbyParticipants
+                .FirstOrDefaultAsync(lp => lp.LobbyId == lobbyId && lp.UserId == userId);
+
+            if (participant != null)
+            {
+                _context.LobbyParticipants.Remove(participant);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction("LoggedInHome", "Home");
+        }
+
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
@@ -186,7 +205,7 @@ namespace HonoursProject.Controllers
 
             if (lobby != null)
             {
-                _context.LobbyParticipants.RemoveRange(lobby.Participants); // ✅ Remove participants first
+                _context.LobbyParticipants.RemoveRange(lobby.Participants); 
                 _context.Lobbies.Remove(lobby);
                 await _context.SaveChangesAsync();
 
@@ -248,10 +267,10 @@ namespace HonoursProject.Controllers
                 return NotFound();
             }
 
-            // Check if user is already in the lobby
+           
             if (!lobby.Participants.Any(p => p.UserId == userId))
             {
-                // Add user to lobby
+                
                 var participant = new LobbyParticipant
                 {
                     LobbyId = lobbyId,
@@ -263,7 +282,7 @@ namespace HonoursProject.Controllers
                 _logger.LogInformation("User {UserId} joined lobby {LobbyId}", userId, lobbyId);
             }
 
-            // ✅ Redirect to CreatedLobby view
+            
             return RedirectToAction("CreatedLobby", new { lobbyId = lobby.LobbyId });
         }
 

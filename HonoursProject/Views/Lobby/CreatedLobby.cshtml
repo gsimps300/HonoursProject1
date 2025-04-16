@@ -1,5 +1,11 @@
 ﻿@model CreatedLobbyViewModel
 
+@{
+    ViewData["Title"] = "Lobby Details";
+    var currentUserId = Context.Session.GetString("UserId");
+    var isCreator = currentUserId != null && currentUserId == ViewBag.CreatorId?.ToString();
+}
+
 <div>
     <h2>@Model.GameTitle (@Model.Platform)</h2>
 
@@ -25,25 +31,36 @@
         <button id="send-btn">Send</button>
     </div>
 
-    <button id="disband-btn">Disband Lobby</button>
+    @if (isCreator)
+    {
+        <button id="disband-btn" class="btn btn-danger mt-3">Disband Lobby</button>
+    }
+    else
+    {
+        <form asp-controller="Lobby" asp-action="Leave" method="post">
+            <input type="hidden" name="lobbyId" value="@Model.LobbyId" />
+            <button type="submit" class="btn btn-warning mt-3">Leave Lobby</button>
+        </form>
+    }
 </div>
 
 <script>
     document.getElementById('send-btn').addEventListener('click', () => {
         const message = document.getElementById('chat-input').value;
         if (message.trim() !== '') {
-            // Send message to backend
-            console.log("Message sent:", message);
             document.getElementById('chat-window').innerHTML += `<p>${message}</p>`;
             document.getElementById('chat-input').value = '';
         }
     });
 
-    document.getElementById('disband-btn').addEventListener('click', async () => {
-        const lobbyId = @Model.LobbyId;
-        const response = await fetch(`/Lobby/Disband/${lobbyId}`, { method: 'POST' });
-        if (response.ok) {
-            window.location.href = '/';
-        }
-    });
+    const disbandBtn = document.getElementById('disband-btn');
+    if (disbandBtn) {
+        disbandBtn.addEventListener('click', async () => {
+            const lobbyId = @Model.LobbyId;
+            const response = await fetch(`/Lobby/Disband/${lobbyId}`, { method: 'POST' });
+            if (response.ok) {
+                window.location.href = '/';
+            }
+        });
+    }
 </script>
